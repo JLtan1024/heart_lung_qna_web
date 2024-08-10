@@ -31,7 +31,7 @@ def find_best_answer(user_question):
     user_question_embedding = get_embedding(user_question)
 
     # Calculate cosine similarities for all questions in the dataset
-    df['Similarity'] = df['Question_Embedding'].apply(lambda x: cosine_similarity(x.reshape(1, -1), user_question_embedding))
+    df['Similarity'] = df['Question_Embedding'].apply(lambda x: cosine_similarity(x.reshape(1, -1), user_question_embedding).flatten()[0])
 
     # Find the most similar question and get its corresponding answer
     most_similar_index = df['Similarity'].idxmax()
@@ -42,20 +42,43 @@ def find_best_answer(user_question):
 
     if max_similarity >= similarity_threshold:
         best_answer = df.loc[most_similar_index, 'Answer']
-        return best_answer
+        return best_answer, max_similarity
     else:
-        return "I apologize, but I don't have information on that topic yet. Could you please ask other questions?"
+        return "I apologize, but I don't have information on that topic yet. Could you please ask other questions?", max_similarity
 
 def main():
     st.title("Health Question Answering")
 
+    # Search Bar for FAQs
+    search_query = st.text_input("Search FAQs")
+    if search_query:
+        filtered_df = df[df['Question'].str.contains(search_query, case=False, na=False)]
+        if not filtered_df.empty:
+            st.subheader("Related FAQs")
+            for _, row in filtered_df.iterrows():
+                st.write(f"**Q:** {row['Question']}")
+                st.write(f"**A:** {row['Answer']}")
+        else:
+            st.write("No FAQs found for the search query.")
+
+    # Ask question section
     user_question = st.text_input("Ask your health question")
     if st.button("Submit"):
         if user_question:
-            best_answer = find_best_answer(user_question)
+            best_answer, similarity_score = find_best_answer(user_question)
+            st.write(f"Similarity Score: {similarity_score:.2f}")
             st.write(best_answer)
+            
+            # Rating system
+            rating = st.slider("Rate the helpfulness of the answer", 1, 5, 3)
+            st.write(f"Thank you for rating this answer: {rating} star(s)")
         else:
             st.write("Please enter a question.")
+    
+    if st.button("Clear"):
+        st.text_input("Ask your health question", value="", key="clear_input")
+        st.write("")
+        st.write("")
 
 if __name__ == "__main__":
     main()
