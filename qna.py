@@ -10,7 +10,7 @@ openai.api_key = st.secrets["mykey"]
 model = "text-embedding-ada-002"
 
 # Load your dataset
-df = pd.read_csv('qa_dataset_with_embeddings.csv')
+df = pd.read_csv('qa_dataset_with_embeddings (3).csv')
 
 # Function to get embedding
 def get_embedding(text):
