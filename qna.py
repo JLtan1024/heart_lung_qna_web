@@ -50,6 +50,11 @@ def find_best_answer(user_question):
 def main():
     st.title("Health Question Answering")
 
+    # Initialize session state to store FAQ question and answer
+    if "faq_answer" not in st.session_state:
+        st.session_state.faq_answer = None
+        st.session_state.faq_question = None
+
     # Sidebar with dynamic FAQs
     st.sidebar.title("FAQs")
 
@@ -58,13 +63,16 @@ def main():
     faq_indices = random.sample(range(len(df)), num_faqs)
     faq_list = df.loc[faq_indices, ['Question', 'Answer']].values.tolist()
 
-    # Create a button for each FAQ that fills in the text area and submits the question
+    # Create a button for each FAQ that fills in the text area and shows the answer
     for question, answer in faq_list:
         if st.sidebar.button(question):
-            user_question = question
-            st.write(f"**Question:** {user_question}")
-            st.write(f"**Answer:** {answer}")
-            break
+            st.session_state.faq_question = question
+            st.session_state.faq_answer = answer
+
+    # Display the FAQ question and answer in the main section if available
+    if st.session_state.faq_answer:
+        st.write(f"**Question:** {st.session_state.faq_question}")
+        st.write(f"**Answer:** {st.session_state.faq_answer}")
 
     # Ask question section
     user_question = st.text_area("Ask a question about heart, lung, or blood health:")
@@ -82,8 +90,9 @@ def main():
     
     # Clear button
     if st.button("Clear"):
+        st.session_state.faq_question = None
+        st.session_state.faq_answer = None
         st.text_area("Ask a question about heart, lung, or blood health:", value="", key="reset")
-        st.write("")
         st.write("")
 
 if __name__ == "__main__":
