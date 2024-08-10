@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import openai
+import random
 
 openai.api_key = st.secrets["mykey"]
 
@@ -49,13 +50,21 @@ def find_best_answer(user_question):
 def main():
     st.title("Health Question Answering")
 
-    # Sidebar with FAQs
+    # Sidebar with dynamic FAQs
     st.sidebar.title("FAQs")
-    st.sidebar.write("What is cardiomyopathy?")
-    st.sidebar.write("Who is at risk for cardiomyopathy?")
-    st.sidebar.write("How can I prevent heart disease?")
-    st.sidebar.write("What are the symptoms of lung cancer?")
-    st.sidebar.write("What causes high blood pressure?")
+
+    # Randomly pick a few questions and answers from the DataFrame
+    num_faqs = 5  # Number of FAQs to display
+    faq_indices = random.sample(range(len(df)), num_faqs)
+    faq_list = df.loc[faq_indices, ['Question', 'Answer']].values.tolist()
+
+    # Create a button for each FAQ that fills in the text area and submits the question
+    for question, answer in faq_list:
+        if st.sidebar.button(question):
+            user_question = question
+            st.write(f"**Question:** {user_question}")
+            st.write(f"**Answer:** {answer}")
+            break
 
     # Ask question section
     user_question = st.text_area("Ask a question about heart, lung, or blood health:")
