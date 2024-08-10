@@ -65,14 +65,8 @@ def main():
 
     # Display FAQ questions and answers in the sidebar
     for question, answer in faq_list:
-        if st.sidebar.button(question):
-            st.session_state.faq_question = question
-            st.session_state.faq_answer = answer
-
-    # Display the FAQ question and answer in the main section if available
-    if st.session_state.faq_answer:
-        st.write(f"**Question:** {st.session_state.faq_question}")
-        st.write(f"**Answer:** {st.session_state.faq_answer}")
+        with st.sidebar.expander(question):
+            st.write(f"**Answer:** {answer}")
 
     # Ask question section
     user_question = st.text_area("Ask a question about heart, lung, or blood health:")
