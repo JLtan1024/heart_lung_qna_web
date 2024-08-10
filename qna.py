@@ -49,21 +49,21 @@ def find_best_answer(user_question):
 def main():
     st.title("Health Question Answering")
 
-    # Display Frequently Asked Questions (FAQs)
-    st.subheader("Frequently Asked Questions")
-    faqs = df[df['Is_Frequently_Asked'] == True]  # Assuming you have a column indicating FAQs
-    for _, row in faqs.iterrows():
-        st.write(f"**Q:** {row['Question']}")
-        st.write(f"**A:** {row['Answer']}")
-        st.write("---")
+    # Sidebar with FAQs
+    st.sidebar.title("FAQs")
+    st.sidebar.write("What is cardiomyopathy?")
+    st.sidebar.write("Who is at risk for cardiomyopathy?")
+    st.sidebar.write("How can I prevent heart disease?")
+    st.sidebar.write("What are the symptoms of lung cancer?")
+    st.sidebar.write("What causes high blood pressure?")
 
     # Ask question section
-    user_question = st.text_input("Ask your health question")
+    user_question = st.text_area("Ask a question about heart, lung, or blood health:")
     if st.button("Submit"):
         if user_question:
             best_answer, similarity_score = find_best_answer(user_question)
-            st.write(f"Similarity Score: {similarity_score:.2f}")
-            st.write(best_answer)
+            st.write(f"**Similarity Score:** {similarity_score:.2f}")
+            st.write(f"**Answer:** {best_answer}")
             
             # Rating system
             rating = st.slider("Rate the helpfulness of the answer", 1, 5, 3)
@@ -71,8 +71,9 @@ def main():
         else:
             st.write("Please enter a question.")
     
+    # Clear button
     if st.button("Clear"):
-        st.text_input("Ask your health question", value="", key="clear_input")
+        st.text_area("Ask a question about heart, lung, or blood health:", value="", key="reset")
         st.write("")
         st.write("")
 
