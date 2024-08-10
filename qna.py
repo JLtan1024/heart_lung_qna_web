@@ -3,14 +3,16 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import openai
-
-openai.api_key = st.secrets["mykey"]
+openai.api_key =  st.secrets["mykey"]
 
 # Replace with your embedding model
 model = "text-embedding-ada-002"
 
 # Load your dataset
-df = pd.read_csv('qa_dataset_with_embeddings (3).csv')
+try:
+    df = pd.read_csv('qa_dataset_with_embeddings (3).csv')
+except Exception as e:
+    st.error(f"Error loading CSV file: {e}")
 
 # Function to get embedding
 def get_embedding(text):
@@ -26,7 +28,7 @@ def find_best_answer(user_question):
     user_question_embedding = get_embedding(user_question)
 
     # Calculate cosine similarities for all questions in the dataset
-    df['Similarity'] = df['Question_Embedding'].apply(lambda x: cosine_similarity(x, user_question_embedding))
+    df['Similarity'] = df['Question_Embedding'].apply(lambda x: cosine_similarity(np.array(x).reshape(1, -1), user_question_embedding))
 
     # Find the most similar question and get its corresponding answer
     most_similar_index = df['Similarity'].idxmax()
