@@ -63,7 +63,7 @@ def main():
     faq_indices = random.sample(range(len(df)), num_faqs)
     faq_list = df.loc[faq_indices, ['Question', 'Answer']].values.tolist()
 
-    # Create a button for each FAQ that fills in the text area and shows the answer
+    # Display FAQ questions and answers in the sidebar
     for question, answer in faq_list:
         if st.sidebar.button(question):
             st.session_state.faq_question = question
